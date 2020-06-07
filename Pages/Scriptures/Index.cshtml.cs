@@ -28,8 +28,16 @@ namespace MyScriptureJournal.Pages.Scriptures
         [BindProperty(SupportsGet = true)]
         public string ScriptureNotes { get; set; }
 
-        public async Task OnGetAsync()
+        public string BookSort { get; set; }
+        public string DateSort { get; set; }
+        public string CurrentFilter { get; set; }
+        public string CurrentSort { get; set; }
+
+        public async Task OnGetAsync(string sortOrder)
         {
+            BookSort = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            DateSort = sortOrder == "Date" ? "date_desc" : "Date";
+
             IQueryable<string> bookQuery = from m in _context.Scripture
                                             orderby m.Book
                                             select m.Book;
@@ -47,7 +55,27 @@ namespace MyScriptureJournal.Pages.Scriptures
                 scriptures = scriptures.Where(x => x.Notes == ScriptureNotes);
             }
             Notes = new SelectList(await bookQuery.Distinct().ToListAsync());
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    scriptures = scriptures.OrderByDescending(s => s.Book);
+                    break;
+                case "Date":
+                    scriptures = scriptures.OrderBy(s => s.DateCreated);
+                    break;
+                case "date_desc":
+                    scriptures = scriptures.OrderByDescending(s => s.DateCreated);
+                    break;
+                default:
+                    scriptures = scriptures.OrderBy(s => s.Book);
+                    break;
+            }
+
+            
             Scripture = await scriptures.ToListAsync();
+
+            
         }
     }
 }
