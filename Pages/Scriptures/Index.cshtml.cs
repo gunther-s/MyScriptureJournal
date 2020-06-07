@@ -24,9 +24,9 @@ namespace MyScriptureJournal.Pages.Scriptures
         [BindProperty(SupportsGet = true)]
         public string SearchString { get; set; }
         // Requires using Microsoft.AspNetCore.Mvc.Rendering;
-        public SelectList Books { get; set; }
+        public SelectList Notes { get; set; }
         [BindProperty(SupportsGet = true)]
-        public string ScriptureBook { get; set; }
+        public string ScriptureNotes { get; set; }
 
         public async Task OnGetAsync()
         {
@@ -38,15 +38,15 @@ namespace MyScriptureJournal.Pages.Scriptures
                          select m;
             if (!string.IsNullOrEmpty(SearchString))
             {
-                scriptures = scriptures.Where(s => s.Book.Contains(SearchString));
+                scriptures = scriptures.Where(s => s.Notes.Contains(SearchString));
             }
             Scripture = await _context.Scripture.ToListAsync();
 
-            if (!string.IsNullOrEmpty(ScriptureBook))
+            if (!string.IsNullOrEmpty(ScriptureNotes))
             {
-                scriptures = scriptures.Where(x => x.Book == ScriptureBook);
+                scriptures = scriptures.Where(x => x.Notes == ScriptureNotes);
             }
-            Books = new SelectList(await bookQuery.Distinct().ToListAsync());
+            Notes = new SelectList(await bookQuery.Distinct().ToListAsync());
             Scripture = await scriptures.ToListAsync();
         }
     }
