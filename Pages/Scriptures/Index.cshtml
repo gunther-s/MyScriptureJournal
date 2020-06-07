@@ -13,6 +13,9 @@
 
 <form>
     <p>
+        <select asp-for="ScriptureBook" asp-items="Model.Books">
+            <option value="">All</option>
+        </select>
         Book: <input type="text" asp-for="SearchString" />
         <input type="submit" value="Filter" />
     </p>

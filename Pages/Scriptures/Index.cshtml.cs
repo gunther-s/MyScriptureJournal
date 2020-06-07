@@ -24,12 +24,16 @@ namespace MyScriptureJournal.Pages.Scriptures
         [BindProperty(SupportsGet = true)]
         public string SearchString { get; set; }
         // Requires using Microsoft.AspNetCore.Mvc.Rendering;
-        public SelectList Genres { get; set; }
+        public SelectList Books { get; set; }
         [BindProperty(SupportsGet = true)]
         public string ScriptureBook { get; set; }
 
         public async Task OnGetAsync()
         {
+            IQueryable<string> bookQuery = from m in _context.Scripture
+                                            orderby m.Book
+                                            select m.Book;
+
             var scriptures = from m in _context.Scripture
                          select m;
             if (!string.IsNullOrEmpty(SearchString))
@@ -37,6 +41,13 @@ namespace MyScriptureJournal.Pages.Scriptures
                 scriptures = scriptures.Where(s => s.Book.Contains(SearchString));
             }
             Scripture = await _context.Scripture.ToListAsync();
+
+            if (!string.IsNullOrEmpty(ScriptureBook))
+            {
+                scriptures = scriptures.Where(x => x.Book == ScriptureBook);
+            }
+            Books = new SelectList(await bookQuery.Distinct().ToListAsync());
+            Scripture = await scriptures.ToListAsync();
         }
     }
 }
